@@ -17,7 +17,7 @@ public class FileDataEntity {
 
 	@Id
 	@GeneratedValue
-	private int fid;
+	private int id;
 	
 	@Column(name = "fileId")
 	private String fileId;
@@ -48,10 +48,6 @@ public class FileDataEntity {
 		this.post = post;
 	}
 	
-	
-	public int getFid() {
-		return fid;
-	}
 
 	public String getFileId() {
 		return fileId;
@@ -93,7 +89,11 @@ public class FileDataEntity {
 		this.post = post;
 	}
 
-	public void setFid(int fid) {
-		this.fid = fid;
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

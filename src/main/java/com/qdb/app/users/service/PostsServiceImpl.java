@@ -30,6 +30,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 	private ModelMapper modelMapper;
 	
 	public PostsServiceImpl() {
+		modelMapper = new ModelMapper();
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 	}
 	
@@ -95,7 +96,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 	@Override
 	public PostResponseModel deletePostByPostId(String postId) {
 		PostEntity postToDelete = postsRepository.findByPostId(postId);
-		postsRepository.deleteById(postToDelete.getId());
+		postsRepository.delete(postToDelete);
 		PostResponseModel deletedPostResponse = modelMapper.map(postToDelete, PostResponseModel.class);
 		return deletedPostResponse;
 	}

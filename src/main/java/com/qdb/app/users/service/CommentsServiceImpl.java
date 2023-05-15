@@ -35,6 +35,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	private ModelMapper modelmapper;
 
 	public CommentsServiceImpl() {
+		modelmapper = new ModelMapper();
 		modelmapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 	}
 
@@ -99,7 +100,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	@Override
 	public CommentResponseModel deleteCommentByCommentId(String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
-		commentsRepository.deleteById(comment.getId());
+		commentsRepository.delete(comment);
 		CommentResponseModel deletedComment = modelmapper.map(comment, CommentResponseModel.class);
 		return deletedComment;
 	}

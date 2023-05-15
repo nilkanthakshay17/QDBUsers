@@ -3,6 +3,8 @@ package com.qdb.app.users.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,29 +29,21 @@ public class PostEntity {
 	
 	private String body;
 
-	@OneToMany
-	private List<CommentEntity> comments;
+	@JsonIgnore
+	@OneToMany(mappedBy = "post")
+	private List<CommentEntity> comments = new ArrayList<>();;
 	
 	public PostEntity() {
-		comments = new ArrayList<>();
+		
 	}
 
-	public PostEntity(int id, String postId,String fileId, String userId, String title, String body) {
+	public PostEntity( String postId,String fileId, String userId, String title, String body) {
 		super();
-		this.id = id;
 		this.postId = postId;
 		this.fileId = fileId;
 		this.userId = userId;
 		this.title = title;
 		this.body = body;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getPostId() {
@@ -98,5 +92,17 @@ public class PostEntity {
 	
 	public void setFileId(String fileId) {
 		this.fileId = fileId;
+	}
+	
+	public void addComment(CommentEntity comment) {
+		this.comments.add(comment);
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

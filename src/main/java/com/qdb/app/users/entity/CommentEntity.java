@@ -1,8 +1,11 @@
 package com.qdb.app.users.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,13 +26,16 @@ public class CommentEntity {
 	
 	private String body;
 
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "comment_post_id",referencedColumnName = "id")
+	private PostEntity post;
+	
 	public CommentEntity() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public CommentEntity(int id, String commentId, String postId, String name, String email, String body) {
+	public CommentEntity(String commentId, String postId, String name, String email, String body) {
 		super();
-		this.id = id;
 		this.commentId = commentId;
 		this.postId = postId;
 		this.name = name;
@@ -37,13 +43,6 @@ public class CommentEntity {
 		this.body = body;
 	}
 
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public String getCommentId() {
 		return commentId;
@@ -83,5 +82,21 @@ public class CommentEntity {
 
 	public void setBody(String body) {
 		this.body = body;
+	}
+
+	public PostEntity getPost() {
+		return post;
+	}
+
+	public void setPost(PostEntity post) {
+		this.post = post;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

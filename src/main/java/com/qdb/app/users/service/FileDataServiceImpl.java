@@ -61,7 +61,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 	@Override
 	public FileDataEntity deleteFileByFileId(String fileId) throws Exception {
 		Optional<FileDataEntity> dbFileData=fileDataRepository.findByFileId(fileId);
-		fileDataRepository.deleteById(dbFileData.get().getFid());
+		fileDataRepository.delete(dbFileData.get());
 		return dbFileData.get();
 	}
 	
