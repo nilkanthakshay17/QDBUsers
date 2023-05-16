@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.qdb.app.users.entity.UserEntity;
 import com.qdb.app.users.model.UserRequestModel;
+import com.qdb.app.users.model.UserResponseModel;
 
 @Service
 public interface UsersServiceInt {
 
-	public List<UserEntity> getAllUsers();
-	public UserEntity getUserByUserId(String userId);
-	public UserEntity createUser(UserRequestModel createUser);
-	public UserEntity updateUser(UserRequestModel updateUser, String userId);
+	public List<UserResponseModel> getAllUsers();
+	public UserResponseModel getUserByUserId(String userId);
+	public UserResponseModel createUser(UserRequestModel createUser);
+	public UserResponseModel updateUser(UserRequestModel updateUser, String userId);
 	public String deleteAllUsers();
-	public UserEntity deleteUserByUserId(String userId);
+	public UserResponseModel deleteUserByUserId(String userId);
 }

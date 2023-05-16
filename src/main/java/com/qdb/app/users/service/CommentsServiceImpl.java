@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import com.qdb.app.users.entity.CommentEntity;
 import com.qdb.app.users.entity.PostEntity;
 import com.qdb.app.users.entity.UserEntity;
+import com.qdb.app.users.exception.CommentException;
+import com.qdb.app.users.exception.PostException;
+import com.qdb.app.users.exception.UserException;
 import com.qdb.app.users.model.CommentRequestModel;
 import com.qdb.app.users.model.CommentResponseModel;
 import com.qdb.app.users.repository.CommentsRepository;
@@ -43,6 +46,10 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	public List<CommentResponseModel> getAllComments() {
 		List<CommentEntity> allComments = commentsRepository.findAll();
 
+		if(null == allComments) {
+			throw new CommentException("Comments not found");
+		}
+		
 		List<CommentResponseModel> allCommentsResponse = new ArrayList<>();
 
 		for (CommentEntity ce : allComments) {
@@ -55,6 +62,11 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	@Override
 	public CommentResponseModel getCommentByCommentId(String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
+		
+		if(null == comment) {
+			throw new CommentException("Comment not found");
+		}
+		
 		CommentResponseModel commentResponse = modelmapper.map(comment, CommentResponseModel.class);
 		return commentResponse;
 	}
@@ -65,9 +77,8 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		commentEntity.setCommentId(UUID.randomUUID().toString());
 
 		Optional<UserEntity> commentingUser = usersRepository.findByUserId(userId);
-		if (null == commentingUser) {
-			commentEntity.setEmail("dummy@email.com");
-			commentEntity.setName("Dummy");
+		if (null == commentingUser || commentingUser.equals(Optional.empty())) {
+			throw new UserException("User notfound");
 		} else {
 			commentEntity.setEmail(commentingUser.get().getEmail());
 			commentEntity.setName(commentingUser.get().getUserName());
@@ -78,11 +89,16 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 
 		CommentEntity createdComment = commentsRepository.save(commentEntity);
 
-		PostEntity commentOnPost = postsRepository.findByPostId(postId);
-		if (null != commentOnPost) {
-			commentOnPost.getComments().add(commentEntity);
-			postsRepository.save(commentOnPost);
+		PostEntity postEntity = postsRepository.findByPostId(postId);
+		
+		if(null != postEntity) {
+			postEntity.addComment(createdComment);
+			postsRepository.save(postEntity);
 		}
+		else {
+			throw new PostException("Post not found");
+		}
+		
 		CommentResponseModel createdCommentResponse = modelmapper.map(createdComment, CommentResponseModel.class);
 		
 		return createdCommentResponse;
@@ -90,9 +106,13 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 
 	@Override
 	public CommentResponseModel updateComment(CommentRequestModel updateComment, String commentId) {
-		CommentEntity commentEntity = commentsRepository.findByCommentId(commentId);
-		commentEntity.setBody(updateComment.getBody());
-		CommentEntity updatedComment = commentsRepository.save(commentEntity);
+		CommentEntity comment = commentsRepository.findByCommentId(commentId);
+		
+		if(null == comment) {
+			throw new CommentException("Comment not found");
+		}
+		comment.setBody(updateComment.getBody());
+		CommentEntity updatedComment = commentsRepository.save(comment);
 		CommentResponseModel updatedCommentResponse = modelmapper.map(updatedComment, CommentResponseModel.class);
 		return updatedCommentResponse;
 	}
@@ -100,6 +120,10 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	@Override
 	public CommentResponseModel deleteCommentByCommentId(String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
+		
+		if(null == comment) {
+			throw new CommentException("Comments not found");
+		}
 		commentsRepository.delete(comment);
 		CommentResponseModel deletedComment = modelmapper.map(comment, CommentResponseModel.class);
 		return deletedComment;

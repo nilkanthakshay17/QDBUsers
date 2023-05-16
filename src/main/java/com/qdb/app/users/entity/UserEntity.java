@@ -3,6 +3,8 @@ package com.qdb.app.users.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,11 +32,12 @@ public class UserEntity {
 	@Column(name = "password")
 	private String encryptedPassword;
 	
-	@OneToMany
-	private List<FileDataEntity> files;
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
+	private List<FileDataEntity> files = new ArrayList<>();
+	
 	
 	public UserEntity() {
-		this.files = new ArrayList<>();
 	}
 
 	public UserEntity(int id, String userId, String userName, String email, String encryptedPassword) {
@@ -92,6 +95,10 @@ public class UserEntity {
 
 	public void setFiles(List<FileDataEntity> files) {
 		this.files = files;
+	}
+	
+	public void addFile(FileDataEntity fileData) {
+		this.files.add(fileData);
 	}
 }
 

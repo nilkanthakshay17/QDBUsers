@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import com.qdb.app.users.entity.FileDataEntity;
 import com.qdb.app.users.entity.UserEntity;
 
 /**
@@ -28,10 +29,12 @@ class UsersRepositoryTest {
 	private UsersRepository usersRepository;
 	
 	UserEntity userEntity;
-	
+	FileDataEntity fileDataEntity;
 	@BeforeEach
 	void setUp() throws Exception {
 		userEntity = new UserEntity(1, "999", "Akshay999", "Akshay@gmail.com", "Akshay@123");
+		fileDataEntity = new FileDataEntity("999", "file1", "pdf", null, null);
+		userEntity.addFile(fileDataEntity);
 		usersRepository.save(userEntity);
 	}
 	
@@ -48,6 +51,7 @@ class UsersRepositoryTest {
 		assertEquals("Akshay999", receivedEntity.get().getUserName());
 		assertEquals("Akshay@gmail.com", receivedEntity.get().getEmail());
 		assertEquals("Akshay@123", receivedEntity.get().getEncryptedPassword());
+		assertEquals(1, receivedEntity.get().getFiles().size());
 	}
 
 	@Test

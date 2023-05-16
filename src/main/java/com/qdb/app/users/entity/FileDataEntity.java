@@ -1,18 +1,21 @@
 package com.qdb.app.users.entity;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
 
 @Entity
-@Table(name = "file_data")
+@Table(name = "files_data")
 public class FileDataEntity {
 
 	@Id
@@ -32,7 +35,12 @@ public class FileDataEntity {
 	@Column(name="filedata", length = 1000)
 	private byte[] fileData;
 
-	@OneToOne
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "file_user_id",referencedColumnName = "id")
+	private UserEntity user;
+	
+	@OneToOne(mappedBy = "file",cascade = CascadeType.ALL)
 	private PostEntity post;
 	
 	public FileDataEntity() {
@@ -95,5 +103,13 @@ public class FileDataEntity {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public UserEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 }

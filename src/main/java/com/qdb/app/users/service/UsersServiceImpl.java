@@ -1,15 +1,20 @@
 package com.qdb.app.users.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.qdb.app.users.entity.UserEntity;
+import com.qdb.app.users.exception.UserException;
 import com.qdb.app.users.model.UserRequestModel;
+import com.qdb.app.users.model.UserResponseModel;
 import com.qdb.app.users.repository.UsersRepository;
 
 @Service
@@ -21,28 +26,45 @@ public class UsersServiceImpl implements UsersServiceInt {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
+	@Autowired
+	private ModelMapper modelMapper;
+	
+	public UsersServiceImpl() {
+		modelMapper = new ModelMapper();
+		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+	}
+	
 	@Override
-	public List<UserEntity> getAllUsers() {
+	public List<UserResponseModel> getAllUsers() {
 		List<UserEntity> allUsers = usersRepository.findAll();
+		if(null == allUsers) {
+			throw new UserException("Users not found");
+		}
+		
+		List<UserResponseModel> allUsersResponse = new ArrayList<>();
 
-		// handle Exception here
-
-		return allUsers;
+		for(UserEntity ue : allUsers) {
+			allUsersResponse.add(modelMapper.map(ue, UserResponseModel.class));
+		}
+		
+		return allUsersResponse;
 	}
 
 	@Override
-	public UserEntity getUserByUserId(String userId) {
+	public UserResponseModel getUserByUserId(String userId) {
 		Optional<UserEntity> user = usersRepository.findByUserId(userId);
 
-		if (null != user) {
-			return user.get();
-		} else {
-			return null;
+		if(null == user || user.equals(Optional.empty())) {
+			throw new UserException("User not found");
 		}
+		
+		UserResponseModel userResponse = modelMapper.map(user, UserResponseModel.class);
+		
+		return userResponse;
 	}
 
 	@Override
-	public UserEntity createUser(UserRequestModel createUser) {
+	public UserResponseModel createUser(UserRequestModel createUser) {
 		UserEntity userEntity = new UserEntity();
 		userEntity.setUserName(createUser.getUserName());
 		userEntity.setEmail(createUser.getEmail());
@@ -51,13 +73,20 @@ public class UsersServiceImpl implements UsersServiceInt {
 
 		UserEntity createdUser = usersRepository.save(userEntity);
 
-		return createdUser;
+		if(null == createdUser) {
+			throw new UserException("Failed to create user");
+		}
+		UserResponseModel createdUserResponse = modelMapper.map(createdUser, UserResponseModel.class);
+		
+		return createdUserResponse;
 	}
 
 	@Override
-	public UserEntity updateUser(UserRequestModel updateUser, String userId) {
+	public UserResponseModel updateUser(UserRequestModel updateUser, String userId) {
 		Optional<UserEntity> userEntity = usersRepository.findByUserId(userId);
 		UserEntity toUpdate = userEntity.get();
+		
+		
 		if(null != toUpdate) {
 			
 			if(updateUser.getUserName() != "" && updateUser.getUserName()!= null) {
@@ -85,11 +114,12 @@ public class UsersServiceImpl implements UsersServiceInt {
 				}
 					
 			}
-			
-			return usersRepository.save(toUpdate);
+			UserEntity updatedUserEntity = usersRepository.save(toUpdate);
+			UserResponseModel updatedUserResponse = modelMapper.map(updatedUserEntity, UserResponseModel.class);
+			return updatedUserResponse;
 		}
 		else {
-			return null;
+			throw new UserException("Failed to update user");
 		}
 	}
 
@@ -102,14 +132,17 @@ public class UsersServiceImpl implements UsersServiceInt {
 	}
 
 	@Override
-	public UserEntity deleteUserByUserId(String userId) {
+	public UserResponseModel deleteUserByUserId(String userId) {
 		Optional<UserEntity> userEntity = usersRepository.findByUserId(userId);
 
+		UserResponseModel userResponse=null;
+		
 		if (null != userEntity) {
-			usersRepository.deleteById(userEntity.get().getId());
-			return userEntity.get();
+			userResponse = modelMapper.map(userEntity, UserResponseModel.class);
+			usersRepository.delete(userEntity.get());
+			return userResponse;
 		} else {
-			return null;
+			throw new UserException("User not found");
 		}
 	}
 

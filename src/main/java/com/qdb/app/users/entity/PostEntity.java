@@ -8,7 +8,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -32,6 +34,10 @@ public class PostEntity {
 	@JsonIgnore
 	@OneToMany(mappedBy = "post")
 	private List<CommentEntity> comments = new ArrayList<>();;
+	
+	@OneToOne
+	@JoinColumn(name = "fk_file_id")
+	private FileDataEntity file;
 	
 	public PostEntity() {
 		

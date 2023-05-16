@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.qdb.app.users.entity.FileDataEntity;
 import com.qdb.app.users.entity.PostEntity;
+import com.qdb.app.users.exception.PostException;
 import com.qdb.app.users.model.PostRequestModel;
 import com.qdb.app.users.model.PostResponseModel;
 import com.qdb.app.users.repository.FileDataRepository;
@@ -37,6 +38,11 @@ public class PostsServiceImpl implements PostsServiceInt {
 	@Override
 	public List<PostResponseModel> getAllPosts() {
 		List<PostEntity> allPosts = postsRepository.findAll();
+		
+		if(null == allPosts) {
+			throw new PostException("Posts not found");
+		}
+		
 		List<PostResponseModel> allPostsResponse = new ArrayList<>();
 		for(PostEntity pe: allPosts){
 			allPostsResponse.add(modelMapper.map(pe, PostResponseModel.class));
@@ -48,6 +54,10 @@ public class PostsServiceImpl implements PostsServiceInt {
 	@Override
 	public PostResponseModel getPostByPostId(String postId) {
 		PostEntity post = postsRepository.findByPostId(postId);
+		
+		if(null == post) {
+			throw new PostException("Post not found");
+		}
 		
 		PostResponseModel postResponse = modelMapper.map(post, PostResponseModel.class);
 		
@@ -67,15 +77,12 @@ public class PostsServiceImpl implements PostsServiceInt {
 		
 		Optional<FileDataEntity> fileData = fileDataRepository.findByFileId(fileId);
 		
-		if(null != fileData) {
-			postToCreate.setFileId(fileData.get().getFileId());
-			fileData.get().setPost(postToCreate);
-		}
 		
-		PostEntity createdPost = postsRepository.save(postToCreate);
-		FileDataEntity resavedFIleData = fileDataRepository.save(fileData.get());
+		FileDataEntity fileDataEntity = fileData.get();
+		fileDataEntity.setPost(postToCreate);
+		fileDataRepository.save(fileDataEntity);
 		
-		PostResponseModel createdPostResponse = modelMapper.map(createdPost, PostResponseModel.class);
+		PostResponseModel createdPostResponse = modelMapper.map(postToCreate, PostResponseModel.class);
 		return createdPostResponse;
 	}
 
@@ -83,10 +90,18 @@ public class PostsServiceImpl implements PostsServiceInt {
 	public PostResponseModel updatePost(PostRequestModel updatePost, String postId) {
 		PostEntity postToUpdate = postsRepository.findByPostId(postId);
 		
+		if(null == postToUpdate) {
+			throw new PostException("Post not found");
+		}
+		
 		postToUpdate.setTitle(updatePost.getTitle());
 		postToUpdate.setBody(updatePost.getBody());
 		
 		PostEntity updatedPost = postsRepository.save(postToUpdate);
+		
+		if(null == updatedPost) {
+			throw new PostException("Failed to update post");
+		}
 		
 		PostResponseModel updatedPostResponse = modelMapper.map(updatedPost, PostResponseModel.class);
 		
@@ -96,6 +111,10 @@ public class PostsServiceImpl implements PostsServiceInt {
 	@Override
 	public PostResponseModel deletePostByPostId(String postId) {
 		PostEntity postToDelete = postsRepository.findByPostId(postId);
+		
+		if(null == postToDelete) {
+			throw new PostException("Post not found");
+		}
 		postsRepository.delete(postToDelete);
 		PostResponseModel deletedPostResponse = modelMapper.map(postToDelete, PostResponseModel.class);
 		return deletedPostResponse;
