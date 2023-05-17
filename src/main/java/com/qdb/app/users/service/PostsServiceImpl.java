@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.qdb.app.users.entity.FileDataEntity;
 import com.qdb.app.users.entity.PostEntity;
+import com.qdb.app.users.exception.FileDataException;
 import com.qdb.app.users.exception.PostException;
 import com.qdb.app.users.model.PostRequestModel;
 import com.qdb.app.users.model.PostResponseModel;
@@ -67,19 +68,31 @@ public class PostsServiceImpl implements PostsServiceInt {
 	@Override
 	public PostResponseModel createPost(PostRequestModel createPost, String userId, String fileId) {
 		
+		
 		PostEntity postToCreate = new PostEntity();
 		
 		postToCreate.setPostId(UUID.randomUUID().toString());
 		postToCreate.setTitle(createPost.getTitle());
 		postToCreate.setBody(createPost.getBody());
-		
+		postToCreate.setFileId(fileId);
 		postToCreate.setUserId(userId);
 		
 		Optional<FileDataEntity> fileData = fileDataRepository.findByFileId(fileId);
 		
+		if(null == fileData || fileData.equals(Optional.empty())) {
+			throw new FileDataException("File not found");
+		}
+		
 		
 		FileDataEntity fileDataEntity = fileData.get();
-		fileDataEntity.setPost(postToCreate);
+		PostEntity deleteOldPost = fileDataEntity.getPost();
+		if(null != deleteOldPost) {
+			throw new PostException("Post already exists");
+		}
+		else {
+			fileDataEntity.setPost(postToCreate);
+		}
+		postToCreate.setFile(fileDataEntity);
 		fileDataRepository.save(fileDataEntity);
 		
 		PostResponseModel createdPostResponse = modelMapper.map(postToCreate, PostResponseModel.class);
@@ -115,6 +128,12 @@ public class PostsServiceImpl implements PostsServiceInt {
 		if(null == postToDelete) {
 			throw new PostException("Post not found");
 		}
+		Optional<FileDataEntity> fileToUpDate = fileDataRepository.findByFileId(postToDelete.getFile().getFileId()); 
+		
+		fileToUpDate.get().setPost(null);
+		fileDataRepository.save(fileToUpDate.get());
+		
+		
 		postsRepository.delete(postToDelete);
 		PostResponseModel deletedPostResponse = modelMapper.map(postToDelete, PostResponseModel.class);
 		return deletedPostResponse;

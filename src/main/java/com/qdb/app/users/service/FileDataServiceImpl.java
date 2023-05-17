@@ -49,7 +49,6 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 	@Override
 	@Transactional
 	public FileDataResponseModel uploadFile(String userId,MultipartFile file) throws IOException{
-		logger.info("QDBUsers: type of file: {}",file.getContentType());
 		
 		if(null == file || ! file.getContentType().equals("application/pdf")) {
 			throw new FileDataException("File type should be .pdf");
@@ -72,18 +71,11 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		UserEntity userEntity = user.get();
 		userEntity.addFile(fde);
 		
-		System.out.println("No of Files:"+userEntity.getFiles().size());
-		
-//		FileDataEntity savedFile = fileDataRepository.save(fde);
 		
 		fde.setQdbuser(userEntity);
 		
 		UserEntity savedUserEntity = usersRepository.save(userEntity);
-		
 
-		
-		System.out.println("No of Files:"+savedUserEntity.getFiles().size());
-		
 		
 		if(null == savedUserEntity) {
 			throw new FileDataException("Uploading failed");
@@ -114,6 +106,10 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		if(null == dbFileData || dbFileData.equals(Optional.empty())) {
 			throw new FileDataException("File not found");
 		}
+		
+		Optional<UserEntity> userToUpdate = usersRepository.findByUserId(dbFileData.get().getQdbuser().getUserId());
+		userToUpdate.get().getFiles().remove(dbFileData.get());
+		usersRepository.save(userToUpdate.get());
 		
 		fileDataRepository.delete(dbFileData.get());
 		

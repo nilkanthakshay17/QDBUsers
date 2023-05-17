@@ -8,6 +8,8 @@ public class FileDataResponseModel {
 
 	private String type;
 
+	private PostResponseModel post;
+	
 	public FileDataResponseModel() {
 		// TODO Auto-generated constructor stub
 	}
@@ -41,5 +43,13 @@ public class FileDataResponseModel {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public PostResponseModel getPost() {
+		return post;
+	}
+
+	public void setPost(PostResponseModel post) {
+		this.post = post;
 	}
 }

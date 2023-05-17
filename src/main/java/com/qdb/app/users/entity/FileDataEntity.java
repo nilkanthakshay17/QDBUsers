@@ -40,7 +40,7 @@ public class FileDataEntity {
 	@JoinColumn(name = "user_id")
 	private UserEntity qdbuser;
 	
-	@OneToOne(mappedBy = "file",cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "file",cascade = {CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.REMOVE },orphanRemoval=true)
 	private PostEntity post;
 	
 	public FileDataEntity() {

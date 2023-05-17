@@ -46,10 +46,10 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	public List<CommentResponseModel> getAllComments() {
 		List<CommentEntity> allComments = commentsRepository.findAll();
 
-		if(null == allComments) {
+		if (null == allComments) {
 			throw new CommentException("Comments not found");
 		}
-		
+
 		List<CommentResponseModel> allCommentsResponse = new ArrayList<>();
 
 		for (CommentEntity ce : allComments) {
@@ -62,11 +62,11 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	@Override
 	public CommentResponseModel getCommentByCommentId(String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
-		
-		if(null == comment) {
+
+		if (null == comment) {
 			throw new CommentException("Comment not found");
 		}
-		
+
 		CommentResponseModel commentResponse = modelmapper.map(comment, CommentResponseModel.class);
 		return commentResponse;
 	}
@@ -87,28 +87,26 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		commentEntity.setPostId(postId);
 		commentEntity.setBody(createComment.getBody());
 
-		CommentEntity createdComment = commentsRepository.save(commentEntity);
-
 		PostEntity postEntity = postsRepository.findByPostId(postId);
-		
-		if(null != postEntity) {
-			postEntity.addComment(createdComment);
+
+		if (null != postEntity) {
+			postEntity.addComment(commentEntity);
+			commentEntity.setPost(postEntity);
 			postsRepository.save(postEntity);
-		}
-		else {
+		} else {
 			throw new PostException("Post not found");
 		}
-		
-		CommentResponseModel createdCommentResponse = modelmapper.map(createdComment, CommentResponseModel.class);
-		
+
+		CommentResponseModel createdCommentResponse = modelmapper.map(commentEntity, CommentResponseModel.class);
+
 		return createdCommentResponse;
 	}
 
 	@Override
 	public CommentResponseModel updateComment(CommentRequestModel updateComment, String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
-		
-		if(null == comment) {
+
+		if (null == comment) {
 			throw new CommentException("Comment not found");
 		}
 		comment.setBody(updateComment.getBody());
@@ -120,10 +118,20 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 	@Override
 	public CommentResponseModel deleteCommentByCommentId(String commentId) {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
-		
-		if(null == comment) {
+
+		if (null == comment) {
 			throw new CommentException("Comments not found");
 		}
+
+		PostEntity postToUpdate = postsRepository.findByPostId(comment.getPost().getPostId());
+
+		if (null == postToUpdate) {
+			throw new PostException("Post not found");
+		} else {
+			postToUpdate.getComments().remove(comment);
+			postsRepository.save(postToUpdate);
+		}
+
 		commentsRepository.delete(comment);
 		CommentResponseModel deletedComment = modelmapper.map(comment, CommentResponseModel.class);
 		return deletedComment;

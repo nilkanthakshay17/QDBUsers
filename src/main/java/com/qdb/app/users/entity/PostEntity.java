@@ -33,8 +33,8 @@ public class PostEntity {
 	private String body;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-	private List<CommentEntity> comments = new ArrayList<>();;
+	@OneToMany(mappedBy = "post", cascade = {CascadeType.ALL})
+	private List<CommentEntity> comments = new ArrayList<>();
 	
 	@OneToOne
 	@JoinColumn(name = "fk_file_id")
@@ -111,5 +111,13 @@ public class PostEntity {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public FileDataEntity getFile() {
+		return file;
+	}
+
+	public void setFile(FileDataEntity file) {
+		this.file = file;
 	}
 }

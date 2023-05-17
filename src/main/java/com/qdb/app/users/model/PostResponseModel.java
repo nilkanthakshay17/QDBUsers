@@ -1,5 +1,6 @@
 package com.qdb.app.users.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostResponseModel {
@@ -14,6 +15,7 @@ public class PostResponseModel {
 
 	private String body;
 
+	private List<CommentResponseModel> comments = new ArrayList<>();
 	
 	public PostResponseModel() {
 	}
@@ -68,4 +70,11 @@ public class PostResponseModel {
 		this.body = body;
 	}
 
+	public List<CommentResponseModel> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<CommentResponseModel> comments) {
+		this.comments = comments;
+	}
 }

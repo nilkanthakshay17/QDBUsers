@@ -26,7 +26,7 @@ public class CommentEntity {
 	
 	private String body;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.REFRESH})
 	@JoinColumn(name = "comment_post_id",referencedColumnName = "id")
 	private PostEntity post;
 	
