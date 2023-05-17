@@ -36,9 +36,9 @@ public class FileDataEntity {
 	private byte[] fileData;
 
 	
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "file_user_id",referencedColumnName = "id")
-	private UserEntity user;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private UserEntity qdbuser;
 	
 	@OneToOne(mappedBy = "file",cascade = CascadeType.ALL)
 	private PostEntity post;
@@ -105,11 +105,11 @@ public class FileDataEntity {
 		this.id = id;
 	}
 
-	public UserEntity getUser() {
-		return user;
+	public UserEntity getQdbuser() {
+		return qdbuser;
 	}
 
-	public void setUser(UserEntity user) {
-		this.user = user;
+	public void setQdbuser(UserEntity qdbuser) {
+		this.qdbuser = qdbuser;
 	}
 }

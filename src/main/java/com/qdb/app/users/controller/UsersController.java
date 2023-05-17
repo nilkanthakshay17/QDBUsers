@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.qdb.app.users.entity.UserEntity;
 import com.qdb.app.users.model.UserRequestModel;
+import com.qdb.app.users.model.UserResponseModel;
 import com.qdb.app.users.service.UsersServiceInt;
 
 @RestController
@@ -28,7 +29,7 @@ public class UsersController {
 	@GetMapping("/users")
 	public ResponseEntity<?> getAllUsers() {
 
-		List<UserEntity> allUsers = usersServiceInt.getAllUsers();
+		List<UserResponseModel> allUsers = usersServiceInt.getAllUsers();
 
 		return ResponseEntity.status(HttpStatus.OK).body(allUsers);
 	}
@@ -36,7 +37,7 @@ public class UsersController {
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<?> getUserByUserId(@PathVariable(name = "userId") String userId) {
 
-		UserEntity user = usersServiceInt.getUserByUserId(userId);
+		UserResponseModel user = usersServiceInt.getUserByUserId(userId);
 
 		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
@@ -44,7 +45,7 @@ public class UsersController {
 	@PostMapping("/users")
 	public ResponseEntity<?> createUser(@RequestBody UserRequestModel createUser) {
 
-		UserEntity createdUser = usersServiceInt.createUser(createUser);
+		UserResponseModel createdUser = usersServiceInt.createUser(createUser);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
@@ -52,7 +53,7 @@ public class UsersController {
 	@PutMapping("/users/{userId}")
 	public ResponseEntity<?> updateUser(@RequestBody UserRequestModel updateUser, @PathVariable(name = "userId")String userId) {
 
-		UserEntity updatedUser = usersServiceInt.updateUser(updateUser, userId);
+		UserResponseModel updatedUser = usersServiceInt.updateUser(updateUser, userId);
 
 		return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedUser);
 	}
@@ -69,7 +70,7 @@ public class UsersController {
 	@DeleteMapping("/users/{userId}")
 	public ResponseEntity<?> deleteUserByUserId(@PathVariable(name = "userId")String userId) {
 
-		UserEntity deletedUser = usersServiceInt.deleteUserByUserId(userId);
+		UserResponseModel deletedUser = usersServiceInt.deleteUserByUserId(userId);
 
 		return ResponseEntity.status(HttpStatus.OK).body(deletedUser);
 	}

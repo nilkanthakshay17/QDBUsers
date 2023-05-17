@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -32,7 +33,7 @@ public class PostEntity {
 	private String body;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
 	private List<CommentEntity> comments = new ArrayList<>();;
 	
 	@OneToOne

@@ -5,10 +5,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
@@ -33,7 +35,7 @@ public class UserEntity {
 	private String encryptedPassword;
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "qdbuser", cascade = CascadeType.ALL)
 	private List<FileDataEntity> files = new ArrayList<>();
 	
 	
@@ -90,7 +92,7 @@ public class UserEntity {
 	}
 
 	public List<FileDataEntity> getFiles() {
-		return files;
+		return this.files;
 	}
 
 	public void setFiles(List<FileDataEntity> files) {

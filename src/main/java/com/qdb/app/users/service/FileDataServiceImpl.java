@@ -8,6 +8,8 @@ import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -22,8 +24,12 @@ import com.qdb.app.users.repository.FileDataRepository;
 import com.qdb.app.users.repository.UsersRepository;
 import com.qdb.app.users.util.FileDataUtil;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class FileDataServiceImpl implements FileDataServiceInt{
+	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private FileDataRepository fileDataRepository;
@@ -41,8 +47,11 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 	
 	
 	@Override
+	@Transactional
 	public FileDataResponseModel uploadFile(String userId,MultipartFile file) throws IOException{
-		if(null == file && ! file.getContentType().equals(MediaType.valueOf("application/pdf"))) {
+		logger.info("QDBUsers: type of file: {}",file.getContentType());
+		
+		if(null == file || ! file.getContentType().equals("application/pdf")) {
 			throw new FileDataException("File type should be .pdf");
 		}
 		
@@ -59,10 +68,22 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 			throw new UserException("User not found");
 		}
 		
+		
 		UserEntity userEntity = user.get();
 		userEntity.addFile(fde);
 		
+		System.out.println("No of Files:"+userEntity.getFiles().size());
+		
+//		FileDataEntity savedFile = fileDataRepository.save(fde);
+		
+		fde.setQdbuser(userEntity);
+		
 		UserEntity savedUserEntity = usersRepository.save(userEntity);
+		
+
+		
+		System.out.println("No of Files:"+savedUserEntity.getFiles().size());
+		
 		
 		if(null == savedUserEntity) {
 			throw new FileDataException("Uploading failed");

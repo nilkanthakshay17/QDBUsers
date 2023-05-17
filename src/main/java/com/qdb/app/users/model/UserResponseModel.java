@@ -13,10 +13,10 @@ public class UserResponseModel {
 
 	private String encryptedPassword;
 
-	private List<FileDataResponseModel> files;
+	private List<FileDataResponseModel> files = new ArrayList<>();
 	
 	public UserResponseModel() {
-		files = new ArrayList<>();
+
 	}
 	
 	public UserResponseModel(String userId, String userName, String email, String encryptedPassword,List<FileDataResponseModel> files) {
@@ -66,5 +66,9 @@ public class UserResponseModel {
 
 	public void setFiles(List<FileDataResponseModel> files) {
 		this.files = files;
+	}
+	
+	public void addFile(FileDataResponseModel fder) {
+		this.files.add(fder);
 	}
 }

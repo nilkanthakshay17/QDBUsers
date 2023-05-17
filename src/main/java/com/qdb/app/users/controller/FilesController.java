@@ -28,6 +28,8 @@ public class FilesController {
 	
 	@PostMapping("/files/{userId}")
 	public ResponseEntity<?> uploadFile(@PathVariable(name = "userId")String userId, @RequestParam(name = "file")MultipartFile file) throws Exception{
+		
+		
 		FileDataResponseModel uploadResult = fileDataServiceInt.uploadFile(userId,file);
 		
 		return ResponseEntity.status(HttpStatus.OK)
@@ -36,6 +38,7 @@ public class FilesController {
 	
 	@GetMapping("/files/{fileId}")
 	public ResponseEntity<?> downloadFile(@PathVariable(name = "fileId")String fileId) throws Exception{
+		
 		byte[] downloadResult = fileDataServiceInt.downloadFile(fileId);
 		
 		return ResponseEntity.status(HttpStatus.OK)

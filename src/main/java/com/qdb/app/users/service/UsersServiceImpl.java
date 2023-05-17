@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.qdb.app.users.entity.FileDataEntity;
 import com.qdb.app.users.entity.UserEntity;
 import com.qdb.app.users.exception.UserException;
+import com.qdb.app.users.model.FileDataResponseModel;
 import com.qdb.app.users.model.UserRequestModel;
 import com.qdb.app.users.model.UserResponseModel;
 import com.qdb.app.users.repository.UsersRepository;
@@ -42,9 +44,11 @@ public class UsersServiceImpl implements UsersServiceInt {
 		}
 		
 		List<UserResponseModel> allUsersResponse = new ArrayList<>();
-
+		UserResponseModel uer; 
+		System.out.println("All users:"+allUsers.size());
 		for(UserEntity ue : allUsers) {
-			allUsersResponse.add(modelMapper.map(ue, UserResponseModel.class));
+			uer = modelMapper.map(ue, UserResponseModel.class);
+			allUsersResponse.add(uer);	
 		}
 		
 		return allUsersResponse;
