@@ -19,13 +19,12 @@ public class UserResponseModel {
 
 	}
 	
-	public UserResponseModel(String userId, String userName, String email, String encryptedPassword,List<FileDataResponseModel> files) {
+	public UserResponseModel(String userId, String userName, String email, String encryptedPassword) {
 		super();
 		this.userId = userId;
 		this.userName = userName;
 		this.email = email;
 		this.encryptedPassword = encryptedPassword;
-		this.files = files;
 	}
 
 	public String getUserId() {

@@ -54,7 +54,7 @@ class FileDataRepositoryTest {
 
 	@Test
 	public void testFindByFileId_failure() {
-		Optional<FileDataEntity> receivedFileDataEntity = fileDataRepository.findByFileId("999");
+		Optional<FileDataEntity> receivedFileDataEntity = fileDataRepository.findByFileId("1");
 		assertEquals(Optional.empty(), receivedFileDataEntity);
 		
 	}

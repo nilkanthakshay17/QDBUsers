@@ -133,4 +133,11 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		}
 		return allFilesResponse;
 	}
+
+
+	@Override
+	public FileDataResponseModel updateFileByFileId(MultipartFile file, String fileId) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

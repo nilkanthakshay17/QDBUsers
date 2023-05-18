@@ -15,5 +15,5 @@ public interface FileDataServiceInt {
 	public byte[] downloadFile(String name) throws IOException;
 	public FileDataResponseModel deleteFileByFileId(String fileId) throws Exception;
 	public List<FileDataResponseModel> getAllFiles() throws Exception;
-	
+	public FileDataResponseModel updateFileByFileId(MultipartFile file,String fileId) throws Exception;
 }
