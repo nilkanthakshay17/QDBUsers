@@ -128,7 +128,6 @@ public class PostsAndCommentsController {
 	
 	
 	@GetMapping("/posts/local")
-	@CircuitBreaker(name = POST_AND_COMMENTS_SERVICE, fallbackMethod = "getAllPostsFallback")
 	public ResponseEntity<?> getAllPostsLocal() {
 		return ResponseEntity.status(HttpStatus.OK).body(postsServiceInt.getAllPosts());
 	}
@@ -145,7 +144,7 @@ public class PostsAndCommentsController {
 
 	@PutMapping("/posts/local/{postId}")
 	public ResponseEntity<?> updatePostLocal(@RequestBody PostRequestModel updateModel,@PathVariable(name = "postId")String postId) {
-		return ResponseEntity.status(HttpStatus.OK).body(postsServiceInt.updatePost(updateModel,postId));
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(postsServiceInt.updatePost(updateModel,postId));
 	}
 
 	@DeleteMapping("/posts/local/{postId}")
@@ -177,7 +176,7 @@ public class PostsAndCommentsController {
 
 	@PutMapping("/comments/local/{commentId}")
 	public ResponseEntity<?> updateCommentLocal(@RequestBody CommentRequestModel commentModel,@PathVariable(name = "commentId")String commentId) {
-		return ResponseEntity.status(HttpStatus.OK).body(commentsServiceInt.updateComment(commentModel,commentId));
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(commentsServiceInt.updateComment(commentModel,commentId));
 	}
 
 	@DeleteMapping("/comments/local/{commentId}")

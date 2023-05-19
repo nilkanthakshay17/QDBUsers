@@ -104,6 +104,20 @@ class UsersServiceImplTest {
 	}
 	
 	@Test
+	public void testCreateUser_failure() {
+		UserRequestModel userRequest = new UserRequestModel("A999","A999@gmail.com","A@123");
+		
+		UserEntity userEntity2 = new UserEntity(1, "U999", "A999", "A@gmail.com", "A@123");
+		UserResponseModel userResponse = new UserResponseModel("U999", "A999", "A@gmail.com", "A@123");
+		when(usersRepository.findByUserId(eq("U999"))).thenReturn(Optional.of(userEntity));
+		when(usersRepository.save(any())).thenReturn(null);
+		when(modelMapper.map(any(),eq(UserResponseModel.class))).thenReturn(userResponse);
+		
+		UserResponseModel receivedResponse = usersServiceImpl.createUser(userRequest);
+		assertNotNull(receivedResponse);
+	}
+	
+	@Test
 	public void testUpdateUser() {
 		UserRequestModel userRequest = new UserRequestModel("A999","A999@gmail.com","A@123");
 		

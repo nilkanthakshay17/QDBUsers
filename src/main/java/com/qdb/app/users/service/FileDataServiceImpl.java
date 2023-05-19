@@ -137,7 +137,24 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 
 	@Override
 	public FileDataResponseModel updateFileByFileId(MultipartFile file, String fileId) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if(null == file || ! file.getContentType().equals("application/pdf")) {
+			throw new FileDataException("File type should be .pdf");
+		}
+		
+		Optional<FileDataEntity> fileEntity = fileDataRepository.findByFileId(fileId);
+		
+		if(null == fileEntity || fileEntity.equals(Optional.empty())) {
+			throw new FileDataException("File not found");
+		}
+		
+		fileEntity.get().setName(file.getOriginalFilename());
+		fileEntity.get().setFileData(FileDataUtil.compressFile(file.getBytes()));
+		
+		FileDataEntity updatedEntity = fileDataRepository.save(fileEntity.get());
+		
+		FileDataResponseModel fileDataResponse = modelMapper.map(updatedEntity, FileDataResponseModel.class);
+		
+		return fileDataResponse;
 	}
 }

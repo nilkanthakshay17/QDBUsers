@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,5 +61,12 @@ public class FilesController {
 		List<FileDataResponseModel> allFilesResponse = fileDataServiceInt.getAllFiles();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(allFilesResponse);
+	}
+	
+	@PutMapping("/files/{fileId}")
+	public ResponseEntity<?> updateFile(@PathVariable(name = "fileId")String fileId,@RequestParam(name = "file")MultipartFile file) throws Exception{
+		FileDataResponseModel updatedFileResponse = fileDataServiceInt.updateFileByFileId(file,fileId);
+		
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedFileResponse);
 	}
 }
