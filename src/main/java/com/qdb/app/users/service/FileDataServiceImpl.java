@@ -11,6 +11,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +52,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 	public FileDataResponseModel uploadFile(String userId,MultipartFile file) throws IOException{
 		
 		if(null == file || ! file.getContentType().equals("application/pdf")) {
-			throw new FileDataException("File type should be .pdf");
+			throw new FileDataException("File type should be .pdf", HttpStatus.BAD_REQUEST);
 		}
 		
 		FileDataEntity fde=new FileDataEntity();
@@ -64,7 +65,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		Optional<UserEntity> user = usersRepository.findByUserId(userId);
 		
 		if(null == user || user.equals(Optional.empty())) {
-			throw new UserException("User not found");
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
 		}
 		
 		
@@ -78,7 +79,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 
 		
 		if(null == savedUserEntity) {
-			throw new FileDataException("Uploading failed");
+			throw new FileDataException("Uploading failed", HttpStatus.BAD_REQUEST);
 		}
 		
 		FileDataResponseModel fdeResponse = modelMapper.map(fde, FileDataResponseModel.class);
@@ -92,7 +93,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		Optional<FileDataEntity> dbFileData=fileDataRepository.findByFileId(fileId);
 		
 		if(null == dbFileData || dbFileData.equals(Optional.empty())) {
-			throw new FileDataException("File not found");
+			throw new FileDataException("File not found", HttpStatus.NOT_FOUND);
 		}
 		
 		byte[] fileData=FileDataUtil.decompressFile(dbFileData.get().getFileData());
@@ -104,7 +105,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		Optional<FileDataEntity> dbFileData=fileDataRepository.findByFileId(fileId);
 		
 		if(null == dbFileData || dbFileData.equals(Optional.empty())) {
-			throw new FileDataException("File not found");
+			throw new FileDataException("File not found", HttpStatus.NOT_FOUND);
 		}
 		
 		Optional<UserEntity> userToUpdate = usersRepository.findByUserId(dbFileData.get().getQdbuser().getUserId());
@@ -123,7 +124,7 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 		List<FileDataEntity> allFiles = fileDataRepository.findAll();
 		
 		if(null == allFiles) {
-			throw new FileDataException("Files not found");
+			throw new FileDataException("Files not found", HttpStatus.NOT_FOUND);
 		}
 		
 		List<FileDataResponseModel> allFilesResponse = new ArrayList<>();
@@ -139,13 +140,13 @@ public class FileDataServiceImpl implements FileDataServiceInt{
 	public FileDataResponseModel updateFileByFileId(MultipartFile file, String fileId) throws Exception {
 		
 		if(null == file || ! file.getContentType().equals("application/pdf")) {
-			throw new FileDataException("File type should be .pdf");
+			throw new FileDataException("File type should be .pdf", HttpStatus.BAD_REQUEST);
 		}
 		
 		Optional<FileDataEntity> fileEntity = fileDataRepository.findByFileId(fileId);
 		
 		if(null == fileEntity || fileEntity.equals(Optional.empty())) {
-			throw new FileDataException("File not found");
+			throw new FileDataException("File not found", HttpStatus.NOT_FOUND);
 		}
 		
 		fileEntity.get().setName(file.getOriginalFilename());

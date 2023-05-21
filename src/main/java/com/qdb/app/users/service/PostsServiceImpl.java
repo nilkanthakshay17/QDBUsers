@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.qdb.app.users.entity.FileDataEntity;
@@ -41,7 +42,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 		List<PostEntity> allPosts = postsRepository.findAll();
 		
 		if(null == allPosts) {
-			throw new PostException("Posts not found");
+			throw new PostException("Posts not found", HttpStatus.NOT_FOUND);
 		}
 		
 		List<PostResponseModel> allPostsResponse = new ArrayList<>();
@@ -57,7 +58,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 		PostEntity post = postsRepository.findByPostId(postId);
 		
 		if(null == post) {
-			throw new PostException("Post not found");
+			throw new PostException("Post not found", HttpStatus.NOT_FOUND);
 		}
 		
 		PostResponseModel postResponse = modelMapper.map(post, PostResponseModel.class);
@@ -80,14 +81,14 @@ public class PostsServiceImpl implements PostsServiceInt {
 		Optional<FileDataEntity> fileData = fileDataRepository.findByFileId(fileId);
 		
 		if(null == fileData || fileData.equals(Optional.empty())) {
-			throw new FileDataException("File not found");
+			throw new FileDataException("File not found", HttpStatus.NOT_FOUND);
 		}
 		
 		
 		FileDataEntity fileDataEntity = fileData.get();
 		PostEntity deleteOldPost = fileDataEntity.getPost();
 		if(null != deleteOldPost) {
-			throw new PostException("Post already exists");
+			throw new PostException("Post already exists", HttpStatus.BAD_REQUEST);
 		}
 		else {
 			fileDataEntity.setPost(postToCreate);
@@ -104,7 +105,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 		PostEntity postToUpdate = postsRepository.findByPostId(postId);
 		
 		if(null == postToUpdate) {
-			throw new PostException("Post not found");
+			throw new PostException("Post not found", HttpStatus.NOT_FOUND);
 		}
 		
 		postToUpdate.setTitle(updatePost.getTitle());
@@ -113,7 +114,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 		PostEntity updatedPost = postsRepository.save(postToUpdate);
 		
 		if(null == updatedPost) {
-			throw new PostException("Failed to update post");
+			throw new PostException("Failed to update post", HttpStatus.NOT_FOUND);
 		}
 		
 		PostResponseModel updatedPostResponse = modelMapper.map(updatedPost, PostResponseModel.class);
@@ -126,7 +127,7 @@ public class PostsServiceImpl implements PostsServiceInt {
 		PostEntity postToDelete = postsRepository.findByPostId(postId);
 		
 		if(null == postToDelete) {
-			throw new PostException("Post not found");
+			throw new PostException("Post not found", HttpStatus.NOT_FOUND);
 		}
 		Optional<FileDataEntity> fileToUpDate = fileDataRepository.findByFileId(postToDelete.getFile().getFileId()); 
 		

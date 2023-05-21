@@ -1,8 +1,22 @@
 package com.qdb.app.users.exception;
 
-public class CommentException extends RuntimeException{
+import org.springframework.http.HttpStatus;
 
-	public CommentException(String msg) {
+public class CommentException extends RuntimeException{
+	
+	HttpStatus status;
+	
+	public CommentException(String msg, HttpStatus status) {
 		super(msg);
+		this.status = status;
 	}
+
+	public HttpStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(HttpStatus status) {
+		this.status = status;
+	}
+	
 }

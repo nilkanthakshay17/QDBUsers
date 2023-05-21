@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class UsersServiceImpl implements UsersServiceInt {
 	public List<UserResponseModel> getAllUsers() {
 		List<UserEntity> allUsers = usersRepository.findAll();
 		if(null == allUsers) {
-			throw new UserException("Users not found");
+			throw new UserException("Users not found", HttpStatus.NOT_FOUND);
 		}
 		
 		List<UserResponseModel> allUsersResponse = new ArrayList<>();
@@ -59,7 +60,7 @@ public class UsersServiceImpl implements UsersServiceInt {
 		Optional<UserEntity> user = usersRepository.findByUserId(userId);
 
 		if(null == user || user.equals(Optional.empty())) {
-			throw new UserException("User not found");
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
 		}
 		
 		UserResponseModel userResponse = modelMapper.map(user, UserResponseModel.class);
@@ -78,7 +79,7 @@ public class UsersServiceImpl implements UsersServiceInt {
 		UserEntity createdUser = usersRepository.save(userEntity);
 
 		if(null == createdUser) {
-			throw new UserException("Failed to create user");
+			throw new UserException("Failed to create user", HttpStatus.BAD_REQUEST);
 		}
 		UserResponseModel createdUserResponse = modelMapper.map(createdUser, UserResponseModel.class);
 		
@@ -123,7 +124,7 @@ public class UsersServiceImpl implements UsersServiceInt {
 			return updatedUserResponse;
 		}
 		else {
-			throw new UserException("Failed to update user");
+			throw new UserException("Failed to update user", HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -146,7 +147,7 @@ public class UsersServiceImpl implements UsersServiceInt {
 			usersRepository.delete(userEntity.get());
 			return userResponse;
 		} else {
-			throw new UserException("User not found");
+			throw new UserException("User not found", HttpStatus.NOT_FOUND);
 		}
 	}
 

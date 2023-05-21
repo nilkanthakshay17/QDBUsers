@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.qdb.app.users.entity.CommentEntity;
@@ -47,7 +48,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		List<CommentEntity> allComments = commentsRepository.findAll();
 
 		if (null == allComments) {
-			throw new CommentException("Comments not found");
+			throw new CommentException("Comments not found", HttpStatus.NOT_FOUND);
 		}
 
 		List<CommentResponseModel> allCommentsResponse = new ArrayList<>();
@@ -64,7 +65,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
 
 		if (null == comment) {
-			throw new CommentException("Comment not found");
+			throw new CommentException("Comment not found", HttpStatus.NOT_FOUND);
 		}
 
 		CommentResponseModel commentResponse = modelmapper.map(comment, CommentResponseModel.class);
@@ -78,7 +79,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 
 		Optional<UserEntity> commentingUser = usersRepository.findByUserId(userId);
 		if (null == commentingUser || commentingUser.equals(Optional.empty())) {
-			throw new UserException("User notfound");
+			throw new UserException("User notfound", HttpStatus.NOT_FOUND);
 		} else {
 			commentEntity.setEmail(commentingUser.get().getEmail());
 			commentEntity.setName(commentingUser.get().getUserName());
@@ -94,7 +95,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 			commentEntity.setPost(postEntity);
 			postsRepository.save(postEntity);
 		} else {
-			throw new PostException("Post not found");
+			throw new PostException("Post not found", HttpStatus.NOT_FOUND);
 		}
 
 		CommentResponseModel createdCommentResponse = modelmapper.map(commentEntity, CommentResponseModel.class);
@@ -107,7 +108,7 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
 
 		if (null == comment) {
-			throw new CommentException("Comment not found");
+			throw new CommentException("Comment not found", HttpStatus.NOT_FOUND);
 		}
 		comment.setBody(updateComment.getBody());
 		CommentEntity updatedComment = commentsRepository.save(comment);
@@ -120,13 +121,13 @@ public class CommentsServiceImpl implements CommentsServiceInt {
 		CommentEntity comment = commentsRepository.findByCommentId(commentId);
 
 		if (null == comment) {
-			throw new CommentException("Comments not found");
+			throw new CommentException("Comments not found", HttpStatus.NOT_FOUND);
 		}
 
 		PostEntity postToUpdate = postsRepository.findByPostId(comment.getPost().getPostId());
 
 		if (null == postToUpdate) {
-			throw new PostException("Post not found");
+			throw new PostException("Post not found", HttpStatus.NOT_FOUND);
 		} else {
 			postToUpdate.getComments().remove(comment);
 			postsRepository.save(postToUpdate);
